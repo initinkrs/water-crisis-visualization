@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Water Crisis in Punjab, Haryana & Rajasthan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <!-- Google Charts Loader -->
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      text-align: center;
+      margin: 30px;
+      color: #00ffff;
+    }
+    .container {
+      width: 90%;
+      margin: auto;
+    }
+    .card {
+      background-color: #1e1e1e;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 15px rgba(0,255,255,0.2);
+    }
+    #map, .chart {
+      height: 500px;
+      border-radius: 15px;
+    }
+    .footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 0.9em;
+      color: #ccc;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🚰 Water Crisis in Punjab, Haryana & Rajasthan (2023-24)</h1>
+  <div class="container">
+    <!-- Map -->
+    <div class="card">
+      <h2>📍 Affected Regions Map</h2>
+      <div id="map"></div>
+    </div>
+
+    <!-- Chart 1 -->
+    <div class="card">
+      <h2>📊 Groundwater Depletion vs Rainfall</h2>
+      <div id="chart1" class="chart"></div>
+    </div>
+
+    <!-- Chart 2 -->
+    <div class="card">
+      <h2>🌾 Agriculture Water Usage (Litres per Crop)</h2>
+      <div id="chart2" class="chart"></div>
+    </div>
+
+    <!-- Chart 3 -->
+    <div class="card">
+      <h2>📉 Year-wise Drop in Water Table (Punjab)</h2>
+      <div id="chart3" class="chart"></div>
+    </div>
+
+    <!-- Chart 4 -->
+    <div class="card">
+      <h2>🧠 Awareness vs Actual Usage Survey</h2>
+      <div id="chart4" class="chart"></div>
+    </div>
+
+    <div class="footer">Source: CGWB, ICAR, NITI Aayog, MoWR, Surveys (2023)</div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+    // Map Setup
+    const map = L.map('map').setView([28.6139, 77.2090], 5);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const states = [
+      { name: "Punjab", lat: 31.1471, lng: 75.3412, info: "🧭 Groundwater Depletion: 78%" },
+      { name: "Haryana", lat: 29.0588, lng: 76.0856, info: "🧭 Groundwater Depletion: 62%" },
+      { name: "Rajasthan", lat: 27.0238, lng: 74.2179, info: "🧭 Scarcity Districts: 30+" }
+    ];
+
+    states.forEach(state => {
+      L.marker([state.lat, state.lng])
+        .addTo(map)
+        .bindPopup(`<b>${state.name}</b><br>${state.info}`);
+    });
+  </script>
+
+  <script>
+    // Load Google Charts
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawAllCharts);
+
+    function drawAllCharts() {
+      // Chart 1: Groundwater Depletion
+      var data1 = google.visualization.arrayToDataTable([
+        ['State', 'Depletion (%)', 'Rainfall (mm)'],
+        ['Punjab', 78, 649],
+        ['Haryana', 62, 617],
+        ['Rajasthan', 44, 313]
+      ]);
+
+      var options1 = {
+        title: 'Groundwater Depletion vs Rainfall',
+        backgroundColor: '#1e1e1e',
+        legend: { textStyle: { color: '#fff' } },
+        titleTextStyle: { color: '#00ffff' },
+        hAxis: { textStyle: { color: '#fff' } },
+        vAxis: { textStyle: { color: '#fff' } },
+        seriesType: 'bars',
+        series: {1: {type: 'line'}},
+        colors: ['#00bcd4', '#ff9800']
+      };
+
+      new google.visualization.ComboChart(document.getElementById('chart1')).draw(data1, options1);
+
+      // Chart 2: Agriculture Water Usage
+      var data2 = google.visualization.arrayToDataTable([
+        ['Crop', 'Water Usage (litres per kg)'],
+        ['Paddy', 5000],
+        ['Wheat', 1500],
+        ['Sugarcane', 9000],
+        ['Cotton', 8000],
+        ['Mustard', 900]
+      ]);
+
+      var options2 = {
+        title: 'Litres of Water Required Per Kg Crop (Punjab-Haryana)',
+        backgroundColor: '#1e1e1e',
+        titleTextStyle: { color: '#00ffff' },
+        legend: 'none',
+        hAxis: { textStyle: { color: '#fff' } },
+        vAxis: { textStyle: { color: '#fff' } },
+        colors: ['#ff5722']
+      };
+
+      new google.visualization.ColumnChart(document.getElementById('chart2')).draw(data2, options2);
+
+      // Chart 3: Year-wise Drop in Water Table
+      var data3 = google.visualization.arrayToDataTable([
+        ['Year', 'Water Table Depth (m)'],
+        ['2015', 10.2],
+        ['2017', 11.8],
+        ['2019', 13.6],
+        ['2021', 15.3],
+        ['2023', 17.2]
+      ]);
+
+      var options3 = {
+        title: 'Water Table Drop in Punjab (2015–2023)',
+        backgroundColor: '#1e1e1e',
+        titleTextStyle: { color: '#00ffff' },
+        hAxis: { textStyle: { color: '#fff' } },
+        vAxis: { textStyle: { color: '#fff' }, title: 'Depth (m)' },
+        colors: ['#03a9f4']
+      };
+
+      new google.visualization.LineChart(document.getElementById('chart3')).draw(data3, options3);
+
+      // Chart 4: Awareness vs Usage Survey
+      var data4 = google.visualization.arrayToDataTable([
+        ['Category', 'Aware of Water Crisis', 'Still Waste Water'],
+        ['Punjab Youth', 85, 40],
+        ['Haryana Farmers', 78, 55],
+        ['Rajasthan Urban', 90, 35]
+      ]);
+
+      var options4 = {
+        title: 'Awareness vs. Actual Usage (Survey)',
+        backgroundColor: '#1e1e1e',
+        titleTextStyle: { color: '#00ffff' },
+        legend: { textStyle: { color: '#fff' } },
+        hAxis: { textStyle: { color: '#fff' } },
+        vAxis: { textStyle: { color: '#fff' } },
+        isStacked: true,
+        colors: ['#4caf50', '#f44336']
+      };
+
+      new google.visualization.BarChart(document.getElementById('chart4')).draw(data4, options4);
+    }
+  </script>
+</body>
+</html>
